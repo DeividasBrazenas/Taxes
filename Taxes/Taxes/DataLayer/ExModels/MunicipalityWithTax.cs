@@ -1,4 +1,6 @@
-﻿namespace Taxes.Service.DataLayer.Models
+﻿using Taxes.Service.DataLayer.Models;
+
+namespace Taxes.Service.DataLayer.ExModels
 {
     public class MunicipalityWithTax : Municipality
     {

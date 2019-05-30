@@ -23,6 +23,8 @@ namespace Taxes.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOData();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<TaxesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -41,7 +43,25 @@ namespace Taxes.Service
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+                routes.MapODataServiceRoute("odata", "odata", GetEdmModel());
+                routes.MapRoute("Default", "{controller}/{action}/{id}");
+            });
+        }
+
+        private static IEdmModel GetEdmModel ()
+        {
+            var builder = new ODataConventionModelBuilder();
+            
+            builder.EntitySet<DataLayer.Models.Municipality>("Municipalities");
+            builder.EntitySet<DataLayer.Models.Tax>("Taxes");
+
+            var function = builder.Function("MunicipalitiesWithTax");
+            function.ReturnsCollectionViaEntitySetPath<DataLayer.Models.Municipality>("Municipalities");
+
+            return builder.GetEdmModel();
         }
     }
 }

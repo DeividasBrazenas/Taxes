@@ -4,7 +4,7 @@ namespace Taxes.Service.DataLayer.Models
 {
     public class Tax : BaseModel
     {
-        public int MunicipalityId { get; set; }
+        public Municipality Municipality { get; set; }
         public TaxFrequency Frequency { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

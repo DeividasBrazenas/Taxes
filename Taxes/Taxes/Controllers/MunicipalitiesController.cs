@@ -18,10 +18,16 @@ namespace Taxes.Service.Controllers
 
         [HttpPost]
         [EnableQuery]
-        [ODataRoute("MunicipalitiesWithTax")]
-        public IActionResult GetWithTax([FromODataUri]DateTime date)
+        [ODataRoute("MunicipalityWithTax")]
+        public IActionResult GetWithTax([FromBody]MunicipalityWithTaxPayload payload)
         {
-            return Ok(Context.Municipalities.Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, date)));
+            return Ok(Context.Municipalities.Where(x => x.Name == payload.Name).Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, payload.Date)));
         }
+    }
+
+    public class MunicipalityWithTaxPayload
+    {
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
     }
 }

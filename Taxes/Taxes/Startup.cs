@@ -58,7 +58,7 @@ namespace Taxes.Service
             builder.EntitySet<DataLayer.Models.Municipality>("Municipalities");
             builder.EntitySet<DataLayer.Models.Tax>("Taxes");
 
-            var function = builder.Function("MunicipalitiesWithTax");
+            var function = builder.Function("MunicipalityWithTax");
             function.ReturnsCollectionViaEntitySetPath<DataLayer.Models.Municipality>("Municipalities");
 
             return builder.GetEdmModel();

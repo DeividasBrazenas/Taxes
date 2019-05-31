@@ -6,11 +6,11 @@ namespace Taxes.Service.DataLayer.ExModels
     {
         public MunicipalityWithTax(Municipality municipality, double taxValue)
         {
-            Municipality = municipality;
+            this.Name = municipality.Name;
+            this.Id = municipality.Id;
             TaxValue = taxValue;
         }
 
-        public Municipality Municipality { get; set; }
         public double TaxValue { get; set; }
     }
 }

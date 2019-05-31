@@ -16,7 +16,7 @@ namespace Taxes.Service.BusinessLogic
                 throw new NotImplementedException();
             }
 
-            if (date == null)
+            if (date == DateTime.MinValue)
             {
                 throw new NotImplementedException();
             }
@@ -47,7 +47,7 @@ namespace Taxes.Service.BusinessLogic
         {
             foreach (var tax in taxes)
             {
-                if (date.IsBewteenTwoDates(tax.StartDate, tax.EndDate))
+                if (date.IsBetweenTwoDates(tax.StartDate, tax.EndDate))
                 {
                     return tax;
                 }

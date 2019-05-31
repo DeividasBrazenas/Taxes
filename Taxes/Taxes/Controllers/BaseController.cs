@@ -33,6 +33,11 @@ namespace Taxes.Service.Controllers
         [EnableQuery]
         public IActionResult Post([FromBody]T baseObject)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             Context.Set<T>().Add(baseObject);
             Context.SaveChanges();
             return Created(baseObject);

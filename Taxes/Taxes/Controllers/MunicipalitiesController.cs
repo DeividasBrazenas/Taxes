@@ -16,18 +16,24 @@ namespace Taxes.Service.Controllers
         {
         }
 
-        [HttpPost]
+        [HttpGet]
         [EnableQuery]
         [ODataRoute("MunicipalityWithTax")]
-        public IActionResult GetWithTax(MunicipalityWithTaxPayload payload)
+        public IActionResult GetWithTax([FromODataUri]string name, [FromODataUri]DateTime date)
         {
-            return Ok(Context.Municipalities.Where(x => x.Name == payload.Name).Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, payload.Date)));
-        }
-    }
+            if (name == null)
+            {
+                return BadRequest("Municipality name cannot be null");
+            }
 
-    public class MunicipalityWithTaxPayload
-    {
-        public string Name { get; set; }
-        public DateTime Date { get; set; }
+            var municipalities = Context.Municipalities.Where(x => x.Name == name);
+
+            if (!municipalities.Any())
+            {
+                return Ok("No municipalities have been found with the provided name");
+            }
+
+            return Ok(municipalities.Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, date)));
+        }
     }
 }

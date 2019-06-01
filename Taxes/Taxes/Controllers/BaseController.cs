@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Taxes.Service.DataLayer;
 using Taxes.Service.DataLayer.Models;
@@ -19,24 +18,29 @@ namespace Taxes.Service.Controllers
             Context = context;
         }
 
+        [HttpGet]
         [EnableQuery]
         public IActionResult Get(int key)
         {
             return Ok(Context.Set<T>().FirstOrDefault(c => c.Id == key));
         }
 
+        [HttpGet]
         [EnableQuery]
         public IActionResult Get()
         {
             return Ok(Context.Set<T>());
         }
 
-        [EnableQuery]
-        public async Task<IActionResult> Post(T baseObject)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody]T baseObject)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
             }
 
             await Context.Set<T>().AddAsync(baseObject);
@@ -44,11 +48,15 @@ namespace Taxes.Service.Controllers
             return Created(baseObject);
         }
 
-        public async Task<IActionResult> Patch([FromODataUri] int key, Delta<T> instance)
+        [HttpPatch]
+        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody]Delta<T> instance)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
             }
 
             var entity = await Context.Set<T>().FindAsync(key);
@@ -77,11 +85,15 @@ namespace Taxes.Service.Controllers
             return Updated(entity);
         }
 
-        public async Task<IActionResult> Put([FromODataUri]int key, T update)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromODataUri]int key, [FromBody]T update)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
             }
 
             if (key != update.Id)
@@ -109,6 +121,7 @@ namespace Taxes.Service.Controllers
             return Updated(update);
         }
 
+        [HttpDelete]
         public async Task<ActionResult> Delete([FromODataUri] int key)
         {
             var movie = await Context.Set<T>().FindAsync(key);

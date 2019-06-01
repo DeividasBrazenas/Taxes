@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Taxes.Service.DataLayer;
 using Taxes.Service.DataLayer.Models;
@@ -31,19 +32,19 @@ namespace Taxes.Service.Controllers
         }
 
         [EnableQuery]
-        public IActionResult Post([FromBody]T baseObject)
+        public async Task<IActionResult> Post(T baseObject)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            Context.Set<T>().Add(baseObject);
-            Context.SaveChanges();
+            await Context.Set<T>().AddAsync(baseObject);
+            await Context.SaveChangesAsync();
             return Created(baseObject);
         }
 
-        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<T> instance)
+        public async Task<IActionResult> Patch([FromODataUri] int key, Delta<T> instance)
         {
             if (!ModelState.IsValid)
             {
@@ -76,7 +77,7 @@ namespace Taxes.Service.Controllers
             return Updated(entity);
         }
 
-        public async Task<IActionResult> Put([FromODataUri]int key, [FromBody] T update)
+        public async Task<IActionResult> Put([FromODataUri]int key, T update)
         {
             if (!ModelState.IsValid)
             {

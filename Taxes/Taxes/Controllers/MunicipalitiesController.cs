@@ -19,7 +19,7 @@ namespace Taxes.Service.Controllers
         [HttpPost]
         [EnableQuery]
         [ODataRoute("MunicipalityWithTax")]
-        public IActionResult GetWithTax([FromBody]MunicipalityWithTaxPayload payload)
+        public IActionResult GetWithTax(MunicipalityWithTaxPayload payload)
         {
             return Ok(Context.Municipalities.Where(x => x.Name == payload.Name).Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, payload.Date)));
         }

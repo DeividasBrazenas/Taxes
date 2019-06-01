@@ -13,12 +13,12 @@ namespace Taxes.Service.BusinessLogic
         {
             if (municipality == null)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Municipality cannot be null");
             }
 
             if (date == DateTime.MinValue)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Date was not provided for tax calculation");
             }
 
             if (municipality.Taxes == null || municipality.Taxes.Count == 0)
@@ -45,15 +45,7 @@ namespace Taxes.Service.BusinessLogic
 
         private static Tax Calculate(IEnumerable<Tax> taxes, DateTime date)
         {
-            foreach (var tax in taxes)
-            {
-                if (date.IsBetweenTwoDates(tax.StartDate, tax.EndDate))
-                {
-                    return tax;
-                }
-            }
-
-            return null;
+            return taxes.FirstOrDefault(tax => date.IsBetweenTwoDates(tax.StartDate, tax.EndDate));
         }
     }
 }

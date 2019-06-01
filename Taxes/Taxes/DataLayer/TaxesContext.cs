@@ -5,7 +5,11 @@ namespace Taxes.Service.DataLayer
 {
     public class TaxesContext : DbContext
     {
-        public TaxesContext (DbContextOptions<TaxesContext> options) : base(options)
+        public TaxesContext () : base()
+        {
+        }
+
+        public TaxesContext (DbContextOptions options) : base(options)
         {
         }
 
@@ -15,7 +19,7 @@ namespace Taxes.Service.DataLayer
             modelBuilder.Entity<Tax>().ToTable("Tax");
         }
 
-        public DbSet<Municipality> Municipalities { get; set; }
-        public DbSet<Tax> Taxes { get; set; }
+        public virtual DbSet<Municipality> Municipalities { get; set; }
+        public virtual DbSet<Tax> Taxes { get; set; }
     }
 }

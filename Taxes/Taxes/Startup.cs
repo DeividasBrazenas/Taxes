@@ -26,7 +26,7 @@ namespace Taxes.Service
             services.AddOData();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            
             services.AddDbContext<TaxesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
@@ -41,13 +41,13 @@ namespace Taxes.Service
             {
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseMvc(routes =>
             {
                 routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
                 routes.MapODataServiceRoute("odata", "odata", GetEdmModel());
-                routes.MapRoute("Default", "{controller}/{action}/{id}");
+                routes.MapRoute("Default", "{controller}/{action=Index}/{id?}");
             });
         }
 

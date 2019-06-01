@@ -9,19 +9,19 @@ namespace Taxes.Service.DataLayer.Models
         public int MunicipalityId { get; set; }
 
         [Required]
-        public Municipality Municipality { get; set; }
+        public virtual Municipality Municipality { get; set; }
 
         [Required]
-        public TaxFrequency Frequency { get; set; }
+        public virtual TaxFrequency Frequency { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        public virtual DateTime StartDate { get; set; }
 
         [Required]
-        public DateTime EndDate { get; set; }
+        public virtual DateTime EndDate { get; set; }
 
         [Required]
-        public double Value { get; set; }
+        public virtual double Value { get; set; }
     }
 
     public enum TaxFrequency

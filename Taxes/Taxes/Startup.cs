@@ -54,6 +54,7 @@ namespace Taxes.Service
         private static IEdmModel GetEdmModel ()
         {
             var builder = new ODataConventionModelBuilder();
+            builder.EnableLowerCamelCase();    
             
             builder.EntitySet<DataLayer.Models.Municipality>("Municipalities");
             builder.EntitySet<DataLayer.Models.Tax>("Taxes");

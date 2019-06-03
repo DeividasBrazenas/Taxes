@@ -8,7 +8,6 @@ namespace Taxes.Service.DataLayer.Models
         [Required]
         public int MunicipalityId { get; set; }
 
-        [Required]
         public virtual Municipality Municipality { get; set; }
 
         [Required]

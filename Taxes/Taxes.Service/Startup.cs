@@ -41,7 +41,7 @@ namespace Taxes.Service
             {
                 app.UseHsts();
             }
-            
+
             app.UseHttpsRedirection();
             app.UseMvc(routes =>
             {
@@ -54,8 +54,7 @@ namespace Taxes.Service
         private static IEdmModel GetEdmModel ()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EnableLowerCamelCase();    
-            
+
             builder.EntitySet<DataLayer.Models.Municipality>("Municipalities");
             builder.EntitySet<DataLayer.Models.Tax>("Taxes");
 

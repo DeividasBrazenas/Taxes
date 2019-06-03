@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
@@ -72,14 +73,14 @@ namespace Taxes.Service.Controllers
             {
                 await Context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!ModelExists(key))
                 {
                     return NotFound();
                 }
 
-                throw new NotImplementedException();
+                throw new DBConcurrencyException(ex.Message);
             }
 
             return Updated(entity);
@@ -108,14 +109,14 @@ namespace Taxes.Service.Controllers
                 await Context.SaveChangesAsync();
             }
 
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!ModelExists(key))
                 {
                     return NotFound();
                 }
 
-                throw new NotImplementedException();
+                throw new DBConcurrencyException(ex.Message);
             }
 
             return Updated(update);
@@ -124,14 +125,14 @@ namespace Taxes.Service.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete([FromODataUri] int key)
         {
-            var movie = await Context.Set<T>().FindAsync(key);
+            var entity = await Context.Set<T>().FindAsync(key);
 
-            if (movie == null)
+            if (entity == null)
             {
                 return NotFound();
             }
 
-            Context.Set<T>().Remove(movie);
+            Context.Set<T>().Remove(entity);
             await Context.SaveChangesAsync();
 
             return StatusCode((int)System.Net.HttpStatusCode.NoContent);

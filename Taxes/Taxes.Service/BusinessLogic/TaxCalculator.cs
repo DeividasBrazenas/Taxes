@@ -11,16 +11,6 @@ namespace Taxes.Service.BusinessLogic
     {
         public static MunicipalityWithTax CalculateTax(Municipality municipality, DateTime date)
         {
-            if (municipality == null)
-            {
-                throw new ArgumentException("Municipality cannot be null");
-            }
-
-            if (date == DateTime.MinValue)
-            {
-                throw new ArgumentException("Date was not provided for tax calculation");
-            }
-
             if (municipality.Taxes == null || municipality.Taxes.Count == 0)
             {
                 return new MunicipalityWithTax(municipality, 0);

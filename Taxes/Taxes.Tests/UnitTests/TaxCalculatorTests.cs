@@ -14,7 +14,7 @@ namespace Taxes.Tests.UnitTests
         [TestCase(2016, 07, 10, 0.2)]
         [TestCase(2016, 03, 16, 0.2)]
         [TestCase(2019, 06, 01, 0)]
-        public void CalculateTax_ValidData_Succeeds(int year, int month, int day, double value)
+        public void CalculateTax_ValidPayload_Succeeds(int year, int month, int day, double value)
         {
             var municipality = TestData.Municipalities[0];
             municipality.Taxes = TestData.Taxes;
@@ -24,23 +24,6 @@ namespace Taxes.Tests.UnitTests
 
             Assert.AreEqual(municipality.Name, municipalityWithTax.Name);
             Assert.AreEqual(value, municipalityWithTax.TaxValue);
-        }
-
-        [Test]
-        public void CalculateTax_MunicipalityNull_ThrowsException()
-        {
-            var ex = Assert.Throws<ArgumentException>(() => TaxCalculator.CalculateTax(null, DateTime.Now));
-            Assert.AreEqual("Municipality cannot be null", ex.Message);
-        }
-
-        [Test]
-        public void CalculateTax_MinDateTime_ThrowsException()
-        {
-            var municipality = TestData.Municipalities[0];
-            municipality.Taxes = TestData.Taxes;
-
-            var ex = Assert.Throws<ArgumentException>(() => TaxCalculator.CalculateTax(municipality, DateTime.MinValue));
-            Assert.AreEqual("Date was not provided for tax calculation", ex.Message);
         }
 
         [Test]

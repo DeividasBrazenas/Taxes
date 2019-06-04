@@ -24,7 +24,7 @@ namespace Taxes.Tests.IntegrationTests
         #region GET
 
         [Test]
-        public async Task GetMunicipality_Succeeds()
+        public async Task GetMunicipality_ValidEntityId_Succeeds()
         {
             JObject municipality = await HelperFunctions.AddMunicipalityTest(_client, Guid.NewGuid().ToString("N"));
 
@@ -38,14 +38,14 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task GetMunicipality_Fails(object id)
+        public async Task GetMunicipality_InvalidEntityId_Fails(object id)
         {
             var response = await _client.GetAsync($"/odata/municipalities/{id}");
             Assert.IsTrue((HttpStatusCode.NoContent == response.StatusCode) || (HttpStatusCode.NotFound == response.StatusCode));
         }
 
         [Test]
-        public async Task GetMunicipalities_Succeeds()
+        public async Task GetMunicipalities_NoPayload_Succeeds()
         {
             var response = await _client.GetAsync("/odata/municipalities");
             JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -58,7 +58,7 @@ namespace Taxes.Tests.IntegrationTests
         #region POST
 
         [Test]
-        public async Task AddMunicipality_Succeeds()
+        public async Task AddMunicipality_ValidPayload_Succeeds()
         {
             string name = Guid.NewGuid().ToString("N");
 
@@ -67,7 +67,7 @@ namespace Taxes.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task AddMunicipality_Fails()
+        public async Task AddMunicipality_InvalidPayload_Fails()
         {
             dynamic payload = new JObject();
             payload.ItsMeMario = Guid.NewGuid().ToString("N");
@@ -87,7 +87,7 @@ namespace Taxes.Tests.IntegrationTests
         #region PATCH
 
         [Test]
-        public async Task PatchMunicipality_Succeeds()
+        public async Task PatchMunicipality_ValidPayload_Succeeds()
         {
             string name = Guid.NewGuid().ToString("N");
             string newName = Guid.NewGuid().ToString("N");
@@ -107,7 +107,7 @@ namespace Taxes.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task PatchMunicipality_FailsBadRequest()
+        public async Task PatchMunicipality_InvalidPayload_Fails()
         {
             string name = Guid.NewGuid().ToString("N");
             string expectedError = "The property 'ItsMeMario' does not exist on type 'Taxes.Service.DataLayer.Models.Municipality'. Make sure to only use property names that are defined by the type.";
@@ -132,7 +132,7 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task PatchMunicipality_FailsNotFound(object id)
+        public async Task PatchMunicipality_InvalidEntityId_Fails(object id)
         {
             dynamic payload = new JObject();
             payload.Name = Guid.NewGuid().ToString("N");
@@ -148,7 +148,7 @@ namespace Taxes.Tests.IntegrationTests
         #region PUT
 
         [Test]
-        public async Task PutMunicipality_Succeeds()
+        public async Task PutMunicipality_ValidPayload_Succeeds()
         {
             string name = Guid.NewGuid().ToString("N");
             string newName = Guid.NewGuid().ToString("N");
@@ -169,7 +169,7 @@ namespace Taxes.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task PutMunicipality_FailsBadRequest()
+        public async Task PutMunicipality_InvalidPayload_Fails()
         {
             string name = Guid.NewGuid().ToString("N");
             string expectedError = "The property 'ItsMeMario' does not exist on type 'Taxes.Service.DataLayer.Models.Municipality'. Make sure to only use property names that are defined by the type.";
@@ -194,7 +194,7 @@ namespace Taxes.Tests.IntegrationTests
         #region DELETE
 
         [Test]
-        public async Task DeleteMunicipality_Succeeds()
+        public async Task DeleteMunicipality_ValidEntityId_Succeeds()
         {
             string name = Guid.NewGuid().ToString("N");
 
@@ -214,7 +214,7 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task DeleteMunicipality_Fails(object id)
+        public async Task DeleteMunicipality_InvalidEntityId_Fails(object id)
         {
             var response = await _client.DeleteAsync($"/odata/municipalities/{id}");
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);

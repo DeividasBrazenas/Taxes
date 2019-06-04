@@ -36,7 +36,7 @@ namespace Taxes.Tests.IntegrationTests
         #region GET
 
         [Test]
-        public async Task GetTax_Succeeds()
+        public async Task GetTax_ValidPayload_Succeeds()
         {
             JObject tax = await HelperFunctions.AddTaxTest(_client, _municipality["Id"].ToObject<int>(), DateTime.Now, DateTime.Now.AddYears(1));
 
@@ -50,14 +50,14 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task GetTax_Fails(object id)
+        public async Task GetTax_InvalidEntityId_Fails(object id)
         {
             var response = await _client.GetAsync($"/odata/taxes/{id}");
             Assert.IsTrue((HttpStatusCode.NoContent == response.StatusCode) || (HttpStatusCode.NotFound == response.StatusCode));
         }
 
         [Test]
-        public async Task GetTaxes_Succeeds()
+        public async Task GetTaxes_NoPayload_Succeeds()
         {
             var response = await _client.GetAsync("/odata/taxes");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -68,14 +68,14 @@ namespace Taxes.Tests.IntegrationTests
         #region POST
 
         [Test]
-        public async Task AddTax_Succeeds()
+        public async Task AddTax_ValidPayload_Succeeds()
         {
             JObject tax = await HelperFunctions.AddTaxTest(_client, _municipality["Id"].ToObject<int>(), DateTime.Now, DateTime.Now.AddYears(1));
             await HelperFunctions.GetTaxTest(_client, tax["Id"].ToObject<int>());
         }
 
         [Test]
-        public async Task AddTax_Fails()
+        public async Task AddTax_InvalidPayload_Fails()
         {
             dynamic payload = new JObject();
             payload.ItsMeMario = Guid.NewGuid().ToString("N");
@@ -95,7 +95,7 @@ namespace Taxes.Tests.IntegrationTests
         #region PATCH
 
         [Test]
-        public async Task PatchTax_Succeeds()
+        public async Task PatchTax_ValidPayload_Succeeds()
         {
             double newValue = 0.1;
 
@@ -115,7 +115,7 @@ namespace Taxes.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task PatchTax_FailsBadRequest()
+        public async Task PatchTax_InvalidPayload_Fails()
         {
             string expectedError = "The property 'ItsMeMario' does not exist on type 'Taxes.Service.DataLayer.Models.Tax'. Make sure to only use property names that are defined by the type.";
 
@@ -139,7 +139,7 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task PatchTax_FailsNotFound(object id)
+        public async Task PatchTax_InvalidEntityId_Fails(object id)
         {
             dynamic payload = new JObject();
             payload.Value = 0.1;
@@ -155,7 +155,7 @@ namespace Taxes.Tests.IntegrationTests
         #region PUT
 
         [Test]
-        public async Task PutTax_Succeeds()
+        public async Task PutTax_ValidPayload_Succeeds()
         {
             TaxFrequency newFrequency = TaxFrequency.Daily;
             DateTime newDate = DateTime.Now.AddDays(1);
@@ -185,7 +185,7 @@ namespace Taxes.Tests.IntegrationTests
         }
 
         [Test]
-        public async Task PutTax_FailsBadRequest()
+        public async Task PutTax_InvalidPayload_Fails()
         {
             string expectedError = "The property 'ItsMeMario' does not exist on type 'Taxes.Service.DataLayer.Models.Tax'. Make sure to only use property names that are defined by the type.";
 
@@ -209,7 +209,7 @@ namespace Taxes.Tests.IntegrationTests
         #region DELETE
 
         [Test]
-        public async Task DeleteTax_Succeeds()
+        public async Task DeleteTax_ValidEntityId_Succeeds()
         {
             JObject tax = await HelperFunctions.AddTaxTest(_client, _municipality["Id"].ToObject<int>(), DateTime.Now, DateTime.Now.AddYears(1));
             await HelperFunctions.GetTaxTest(_client, tax["Id"].ToObject<int>());
@@ -227,7 +227,7 @@ namespace Taxes.Tests.IntegrationTests
         [TestCase(true)]
         [TestCase(false)]
         [TestCase(1.1)]
-        public async Task DeleteTax_Fails(object id)
+        public async Task DeleteTax_InvalidEntityId_Fails(object id)
         {
             var response = await _client.DeleteAsync($"/odata/taxes/{id}");
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);

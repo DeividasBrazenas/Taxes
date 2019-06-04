@@ -21,16 +21,22 @@ namespace Taxes.Service.Controllers
         [ODataRoute("MunicipalityWithTax")]
         public IActionResult GetWithTax([FromODataUri]string name, [FromODataUri]DateTime date)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
             {
-                return BadRequest("Municipality name cannot be null");
+                return BadRequest("Municipality name cannot be empty");
+            }
+
+            // If no date is provided, date is automatically set to DateTime.MinValue
+            if (date == DateTime.MinValue)
+            {
+                return BadRequest("Date was not provided or it is not valid");
             }
 
             var municipalities = Context.Municipalities.Where(x => x.Name == name);
 
             if (!municipalities.Any())
             {
-                return Ok("No municipalities have been found with the provided name");
+                return NotFound("No municipalities have been found with the provided name");
             }
 
             return Ok(municipalities.Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, date)));

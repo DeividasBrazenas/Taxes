@@ -1,4 +1,4 @@
-# .ASPNET Core WebApi for Tax calculation.
+# ASP.NET Core WebApi for Tax calculation.
 
 Written in Visual Studio 2019
 

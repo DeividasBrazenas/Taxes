@@ -8,6 +8,7 @@ namespace Taxes.Service.DataLayer.ExModels
         public MunicipalityWithTax(Municipality municipality, double taxValue)
         {
             this.Name = municipality.Name;
+            this.Id = municipality.Id;
             TaxValue = taxValue;
         }
 

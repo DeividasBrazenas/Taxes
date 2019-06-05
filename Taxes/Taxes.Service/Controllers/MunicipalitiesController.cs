@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Taxes.Service.BusinessLogic;
-using Taxes.Service.DataLayer;
 using Taxes.Service.DataLayer.Models;
+using Taxes.Service.DataLayer.Repositories;
+using Taxes.Service.Exceptions;
 
 namespace Taxes.Service.Controllers
 {
     public class MunicipalitiesController : BaseController<Municipality>
     {
-        public MunicipalitiesController(TaxesContext context) : base(context)
+        private readonly IMunicipalityRepository _municipalityRepository;
+
+        public MunicipalitiesController(IMunicipalityRepository repository) : base(repository)
         {
+            _municipalityRepository = repository;
         }
 
         [HttpGet]
@@ -32,14 +36,23 @@ namespace Taxes.Service.Controllers
                 return BadRequest("Date was not provided or it is not valid");
             }
 
-            var municipalities = Context.Municipalities.Where(x => x.Name == name);
+            IEnumerable<Municipality> municipalities;
+
+            try
+            {
+                municipalities = _municipalityRepository.FindByName(name).ToList();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
 
             if (!municipalities.Any())
             {
                 return NotFound("No municipalities have been found with the provided name");
             }
 
-            return Ok(municipalities.Include(x => x.Taxes).Select(x => TaxCalculator.CalculateTax(x, date)));
+            return Ok(municipalities.Select(x => TaxCalculator.CalculateTax(x, date)));
         }
     }
 }

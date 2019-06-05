@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Taxes.Service.DataLayer.Repositories;
 
 namespace Taxes.Service.DataLayer.Models
 {
-    public class Tax : BaseModel
+    public class Tax : IEntity
     {
+        public int Id { get; set; }
+
         [Required]
         public int MunicipalityId { get; set; }
 

@@ -1,93 +1,74 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Taxes.Service.DataLayer;
-using Taxes.Service.DataLayer.Models;
+using Taxes.Service.DataLayer.Repositories;
+using Taxes.Service.Exceptions;
 
 namespace Taxes.Service.Controllers
 {
-    public class BaseController<T> : ODataController where T : BaseModel
+    public class BaseController<T> : ODataController where T : IEntity
     {
-        protected readonly TaxesContext Context;
+        internal readonly IBaseRepository<T> Repository;
 
-        public BaseController(TaxesContext context)
+        public BaseController(IBaseRepository<T> repository)
         {
-            Context = context;
+            Repository = repository;
         }
 
         [HttpGet]
         [EnableQuery]
         public IActionResult Get(int key)
         {
-            return Ok(Context.Set<T>().FirstOrDefault(c => c.Id == key));
+            T entity;
+
+            try
+            {
+                entity = Repository.FindById(key);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e);
+            }
+
+            return Ok(entity);
         }
 
         [HttpGet]
         [EnableQuery]
         public IActionResult Get()
         {
-            return Ok(Context.Set<T>());
+            return Ok(Repository.Get());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]T baseObject)
+        public async Task<IActionResult> Post([FromBody]T entity)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+                var errors = ModelState.SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
 
                 return BadRequest(errors);
             }
 
-            await Context.Set<T>().AddAsync(baseObject);
-            await Context.SaveChangesAsync();
-            return Created(baseObject);
-        }
-
-        [HttpPatch]
-        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody]Delta<T> instance)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
-
-                return BadRequest(errors);
-            }
-
-            var entity = await Context.Set<T>().FindAsync(key);
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            instance.Patch(entity);
+            T createdEntity;
 
             try
             {
-                await Context.SaveChangesAsync();
+                createdEntity = await Repository.Add(entity);
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DBConcurrencyException ex)
             {
-                if (!ModelExists(key))
-                {
-                    return NotFound();
-                }
-
-                throw new DBConcurrencyException(ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            return Updated(entity);
+            return Created(createdEntity);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromODataUri]int key, [FromBody]T update)
+        public async Task<IActionResult> Put([FromBody]T entity)
         {
             if (!ModelState.IsValid)
             {
@@ -97,50 +78,40 @@ namespace Taxes.Service.Controllers
                 return BadRequest(errors);
             }
 
-            if (key != update.Id)
-            {
-                return BadRequest();
-            }
-
-            Context.Entry(update).State = EntityState.Modified;
-
+            T updatedEntity;
             try
             {
-                await Context.SaveChangesAsync();
+                updatedEntity = await Repository.Update(entity);
             }
-
-            catch (DbUpdateConcurrencyException ex)
+            catch (NotFoundException ex)
             {
-                if (!ModelExists(key))
-                {
-                    return NotFound();
-                }
-
-                throw new DBConcurrencyException(ex.Message);
+                return NotFound(ex.Message);
+            }
+            catch (DBConcurrencyException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            return Updated(update);
+            return Updated(updatedEntity);
         }
 
         [HttpDelete]
         public async Task<ActionResult> Delete([FromODataUri] int key)
         {
-            var entity = await Context.Set<T>().FindAsync(key);
-
-            if (entity == null)
+            try
             {
-                return NotFound();
+                await Repository.Delete(key);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DBConcurrencyException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            Context.Set<T>().Remove(entity);
-            await Context.SaveChangesAsync();
-
-            return StatusCode((int)System.Net.HttpStatusCode.NoContent);
-        }
-
-        private bool ModelExists(int key)
-        {
-            return Context.Set<T>().Any(x => x.Id == key);
+            return NoContent();
         }
     }
 }

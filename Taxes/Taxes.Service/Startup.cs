@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Taxes.Service.DataLayer;
+using Taxes.Service.DataLayer.Repositories;
 
 namespace Taxes.Service
 {
@@ -28,6 +29,9 @@ namespace Taxes.Service
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             services.AddDbContext<TaxesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IMunicipalityRepository, SqlMunicipalityRepository>();
+            services.AddScoped<ITaxRepository, SqlTaxRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

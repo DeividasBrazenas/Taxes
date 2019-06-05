@@ -18,9 +18,6 @@ Written in Visual Studio 2019
 > POST: /odata/municipalities     
 Payload: {"Name":"Vilnius"}
 
-> PATCH: /odata/municipalities/id    
-Payload: {"Name":"Vilnius"}
-
 > PUT: /odata/municipalities/id    
 Payload: {"Name":"Vilnius", "Id":1}
 
@@ -35,9 +32,6 @@ Payload: {"Name":"Vilnius", "Id":1}
 > GET: /odata/taxes/id
 
 > POST: /odata/taxes
-Payload: {"MunicipalityId":21, "Frequency":"Yearly", "StartDate":"2016-01-01", "EndDate":"2016-12-31", "Value":0.1}
-
-> PATCH: /odata/taxes/id
 Payload: {"MunicipalityId":21, "Frequency":"Yearly", "StartDate":"2016-01-01", "EndDate":"2016-12-31", "Value":0.1}
 
 > PUT: /odata/taxes/id

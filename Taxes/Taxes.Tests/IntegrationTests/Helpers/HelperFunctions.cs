@@ -39,11 +39,10 @@ namespace Taxes.Tests.IntegrationTests.Helpers
             return responseBody;
         }
 
-        public static async Task<JObject> AddTaxTest(HttpClient client, int municipalityId, DateTimeOffset startDate, DateTimeOffset endDate, TaxFrequency frequency = TaxFrequency.Yearly, double value = 0.5)
+        public static async Task<JObject> AddTaxTest(HttpClient client, int municipalityId, DateTimeOffset startDate, DateTimeOffset endDate, double value = 0.5)
         {
             dynamic payload = new JObject();
             payload.MunicipalityId = municipalityId;
-            payload.Frequency = Enum.GetName(frequency.GetType(), frequency);
             payload.StartDate = startDate;
             payload.EndDate = endDate;
             payload.Value = value;
@@ -55,7 +54,6 @@ namespace Taxes.Tests.IntegrationTests.Helpers
 
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual(municipalityId, responseBody["MunicipalityId"].ToObject<int>());
-            Assert.AreEqual(frequency, responseBody["Frequency"].ToObject<TaxFrequency>());
             Assert.AreEqual(startDate, responseBody["StartDate"].ToObject<DateTimeOffset>());
             Assert.AreEqual(endDate, responseBody["EndDate"].ToObject<DateTimeOffset>());
             Assert.AreEqual(value, responseBody["Value"].ToObject<double>());

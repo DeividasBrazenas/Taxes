@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Taxes.Service.DataLayer.Models;
 
 namespace Taxes.Service.DataLayer.Repositories
 {
-    public interface IBaseRepository<T> where T : IEntity
+    public interface IBaseRepository<T> where T : BaseModel
     {
         IEnumerable<T> Get();
         T FindById(int id);

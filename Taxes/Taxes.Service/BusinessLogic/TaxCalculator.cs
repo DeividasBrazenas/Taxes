@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Taxes.Service.DataLayer.ExModels;
 using Taxes.Service.DataLayer.Models;
-using Taxes.Service.Extensions;
+using Taxes.Service.Exceptions;
 
 namespace Taxes.Service.BusinessLogic
 {
@@ -13,29 +12,12 @@ namespace Taxes.Service.BusinessLogic
         {
             if (municipality.Taxes == null || municipality.Taxes.Count == 0)
             {
-                return new MunicipalityWithTax(municipality, 0);
+                throw new NotFoundException("Municipality '" + municipality.Name + "' does not have any taxes on the provided date " + date);
             }
 
-            var frequencies = new[] { TaxFrequency.Daily, TaxFrequency.Weekly, TaxFrequency.Monthly, TaxFrequency.Yearly };
+            var orderedTaxes = municipality.Taxes.OrderBy(x => (x.EndDate - x.StartDate));
 
-            foreach (var frequency in frequencies)
-            {
-                var taxes = municipality.Taxes.Where(x => x.Frequency == frequency);
-
-                var tax = Calculate(taxes, date);
-
-                if (tax != null)
-                {
-                    return new MunicipalityWithTax(municipality, tax.Value);
-                }
-            }
-
-            return new MunicipalityWithTax(municipality, 0);
-        }
-
-        private static Tax Calculate(IEnumerable<Tax> taxes, DateTime date)
-        {
-            return taxes.FirstOrDefault(tax => date.IsBetweenTwoDates(tax.StartDate, tax.EndDate));
+            return new MunicipalityWithTax(municipality, orderedTaxes.FirstOrDefault());
         }
     }
 }

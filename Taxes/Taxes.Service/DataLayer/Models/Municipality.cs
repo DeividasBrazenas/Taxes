@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using Taxes.Service.DataLayer.Repositories;
 
 namespace Taxes.Service.DataLayer.Models
 {
-    public class Municipality : IEntity
+    public class Municipality : BaseModel
     {
-        public int Id { get; set; }
-        public virtual string Name { get; set; }
-        public virtual ICollection<Tax> Taxes { get; set; }
+        public string Name { get; set; }
+        public ICollection<Tax> Taxes { get; set; }
     }
 }

@@ -4,12 +4,13 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Mvc;
+using Taxes.Service.DataLayer.Models;
 using Taxes.Service.DataLayer.Repositories;
 using Taxes.Service.Exceptions;
 
 namespace Taxes.Service.Controllers
 {
-    public class BaseController<T> : ODataController where T : IEntity
+    public class BaseController<T> : ODataController where T : BaseModel
     {
         internal readonly IBaseRepository<T> Repository;
 

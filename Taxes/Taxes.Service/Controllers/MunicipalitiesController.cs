@@ -40,16 +40,11 @@ namespace Taxes.Service.Controllers
 
             try
             {
-                municipalities = _municipalityRepository.FindByName(name).ToList();
+                municipalities = _municipalityRepository.GetMunicipalitiesWithTaxes(name, date).ToList();
             }
             catch (NotFoundException ex)
             {
                 return NotFound(ex.Message);
-            }
-
-            if (!municipalities.Any())
-            {
-                return NotFound("No municipalities have been found with the provided name");
             }
 
             return Ok(municipalities.Select(x => TaxCalculator.CalculateTax(x, date)));

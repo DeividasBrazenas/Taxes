@@ -8,11 +8,11 @@ using Taxes.Service.Exceptions;
 
 namespace Taxes.Service.DataLayer.Repositories
 {
-    public class SqlBaseRepository<T> : IBaseRepository<T> where T : IEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseModel
     { 
         internal readonly TaxesContext Context;
 
-        public SqlBaseRepository(TaxesContext context)
+        public BaseRepository(TaxesContext context)
         {
             Context = context;
         }
@@ -96,7 +96,7 @@ namespace Taxes.Service.DataLayer.Repositories
 
         private bool ModelExists(int id)
         {
-            return Context.Municipalities.Any(x => x.Id == id);
+            return Context.Set<T>().Any(x => x.Id == id);
         }
     }
 }
